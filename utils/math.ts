@@ -27,11 +27,24 @@ export const calculateLaserParams = (state: CalculatorState): CalculationResult 
   // 2. Pulses per Spot (Residence Time * Frequency)
   // Residence Time = Spot Diameter / Velocity
   // PPS = (Diameter / Velocity) * Frequency = Diameter / Pitch
-  const pulsesPerSpot = spotMm / pulsePitchMm;
+  let pulsesPerSpot = spotMm / pulsePitchMm;
 
   // 3. Overlap Percentage
   // Overlap = (1 - Pitch / Diameter) * 100
-  const overlapPercentage = (1 - (pulsePitchMm / spotMm)) * 100;
+  let overlapPercentage = (1 - (pulsePitchMm / spotMm)) * 100;
+
+  // 4. Handle high-speed scanning (separated pulses)
+  // When Pitch > Spot Diameter, pulses don't overlap
+  let gapDistance: number | undefined;
+  const isSeparated = pulsePitchMm > spotMm;
+
+  if (isSeparated) {
+    // Clamp to minimum values for separated pulses
+    pulsesPerSpot = Math.max(1, pulsesPerSpot);
+    overlapPercentage = Math.max(0, overlapPercentage);
+    // Calculate gap distance (center-to-center minus spot diameter)
+    gapDistance = pulsePitchMm - spotMm;
+  }
 
   // 4. Pulse Energy (mJ)
   // E = Power (W) / Frequency (Hz) * 1000 (to get mJ)
@@ -54,5 +67,6 @@ export const calculateLaserParams = (state: CalculatorState): CalculationResult 
     spotDiameterMm: spotMm,
     pulseEnergyMj: Number(pulseEnergyMj.toFixed(3)),
     fluenceJcm2: Number(fluenceJcm2.toFixed(2)),
+    gapDistance: gapDistance !== undefined ? Number(gapDistance.toFixed(3)) : undefined,
   };
 };

@@ -24,6 +24,4 @@ dist-ssr
 *.sw?
 
 .vercel
-
-# Claude Code
 .claude

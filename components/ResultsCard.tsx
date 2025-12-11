@@ -1,6 +1,6 @@
 import React from 'react';
 import { CalculationResult } from '../types';
-import { Info, Zap, Flame } from 'lucide-react';
+import { Info, Zap, Flame, AlertTriangle } from 'lucide-react';
 
 interface ResultsCardProps {
   results: CalculationResult;
@@ -14,6 +14,8 @@ export const ResultsCard: React.FC<ResultsCardProps> = ({ results }) => {
     return 'text-emerald-600'; // Good overlap
   };
 
+  const isSeparated = results.gapDistance !== undefined && results.gapDistance > 0;
+
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -23,20 +25,33 @@ export const ResultsCard: React.FC<ResultsCardProps> = ({ results }) => {
               <div className="text-5xl font-bold text-slate-800 tracking-tight">
                   {results.pulsesPerSpot}
               </div>
-              <p className="text-xs text-slate-400 mt-2">
-                  Pulses hitting a single point
-              </p>
+              {isSeparated && (
+                <div className="mt-3 w-full bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-start space-x-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-xs font-semibold text-amber-800">Separated Pulses</p>
+                    <p className="text-xs text-amber-700 mt-0.5">
+                      Gap Distance: <span className="font-mono font-bold">{results.gapDistance?.toFixed(3)} mm</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+              {!isSeparated && (
+                <p className="text-xs text-slate-400 mt-2">
+                    Pulses hitting a single point
+                </p>
+              )}
           </div>
 
           {/* Secondary Metric: Overlap */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-center items-center md:items-start relative overflow-hidden">
-              <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full opacity-10 ${results.overlapPercentage < 0 ? 'bg-red-500' : 'bg-emerald-500'}`}></div>
+              <div className={`absolute -right-6 -bottom-6 w-24 h-24 rounded-full opacity-10 ${isSeparated ? 'bg-amber-500' : 'bg-emerald-500'}`}></div>
               <h2 className="text-sm font-medium text-slate-500 uppercase tracking-wider mb-1">Overlap</h2>
               <div className={`text-4xl font-bold tracking-tight ${getOverlapColor(results.overlapPercentage)}`}>
                   {results.overlapPercentage}%
               </div>
               <p className="text-xs text-slate-400 mt-2 flex items-center">
-                  {results.overlapPercentage < 0 ? "Negative (Separated)" : "Area Overlap"}
+                  {isSeparated ? "No Overlap (Separated)" : "Area Overlap"}
               </p>
           </div>
       </div>

@@ -33,4 +33,5 @@ export interface CalculationResult {
   spotDiameterMm: number; // mm
   pulseEnergyMj: number; // mJ
   fluenceJcm2: number; // J/cm²
+  gapDistance?: number; // mm - distance between pulses when separated
 }
