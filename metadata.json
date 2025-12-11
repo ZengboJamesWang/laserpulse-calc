@@ -1,0 +1,5 @@
+{
+  "name": "LaserPulse Calc",
+  "description": "A precision calculator for laser material processing applications. Calculates pulses per spot, overlap percentage, and energy density based on repetition rate, scanning speed, and spot size.",
+  "requestFramePermissions": []
+}
